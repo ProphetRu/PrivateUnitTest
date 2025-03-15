@@ -5,6 +5,6 @@ int main() noexcept
 {
 	C c{};
 
-	std::cout << "The answer is: " << c.GetUniverseAnswer());
+	std::cout << "The answer is: " << c.GetUniverseAnswer() << std::endl;
 	return 0;
 }
