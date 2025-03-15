@@ -1,0 +1,53 @@
+name: Deploy Ubuntu Elf
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy_ubuntu_elf:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          
+      - name: Clone vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          ./bootstrap-vcpkg.sh -disableMetrics
+      
+      - name: Install dependencies
+        run: ./vcpkg/vcpkg install gtest
+      
+      - name: Build project
+        run: |
+          cmake . -DCMAKE_TOOLCHAIN_FILE=/home/runner/work/PrivateUnitTest/PrivateUnitTest/vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake --build . --config Release
+      
+      - name: Test project
+        run: ctest
+        
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          tag_name: 'elf-${{ github.run_number }}'
+          release_name: 'Release Ubuntu Elf ${{ github.run_number }}'
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset Ubuntu
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          upload_url: '${{ steps.create_release.outputs.upload_url }}'
+          asset_path: './PrivateUnitTest'
+          asset_name: 'PrivateUnitTest-${{ github.run_number }}-Linux.elf'
+          asset_content_type: application/octet-stream
