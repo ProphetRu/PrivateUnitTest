@@ -1,4 +1,4 @@
-name: Deploy Ubuntu Elf
+name: Deploy Ubuntu-Elf
 
 on:
   workflow_dispatch:
