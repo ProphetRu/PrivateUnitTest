@@ -1,10 +1,10 @@
-#include <print>
+#include <iostream>
 #include "C.h"
 
 int main() noexcept
 {
 	C c{};
 
-	std::println("The answer is: {}", c.GetUniverseAnswer());
+	std::cout << "The answer is: " << c.GetUniverseAnswer());
 	return 0;
 }
